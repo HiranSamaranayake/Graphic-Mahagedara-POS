@@ -5,15 +5,21 @@ import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
 import { useApp } from '../../context/AppContext';
 import { formatCurrency } from '../../utils/formatters';
+import type { SalaryRecord } from '../../types';
 import { User, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 
 export interface AddSalaryModalProps {
   isOpen: boolean;
   onClose: () => void;
+  salaryToEdit?: SalaryRecord | null;
 }
 
-export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({ isOpen, onClose }) => {
-  const { staffList, addSalaryRecord } = useApp();
+export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({
+  isOpen,
+  onClose,
+  salaryToEdit,
+}) => {
+  const { staffList, addSalaryRecord, updateSalaryRecord } = useApp();
 
   const [staffId, setStaffId] = useState<string>('');
   const [month, setMonth] = useState<string>('September 2026');
@@ -22,21 +28,47 @@ export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({ isOpen, onClose 
   const [commission, setCommission] = useState<string>('0');
   const [deductions, setDeductions] = useState<string>('0');
   const [otherPayments, setOtherPayments] = useState<string>('0');
-  const [paymentStatus, setPaymentStatus] = useState<'Paid' | 'Pending' | 'Processing'>('Paid');
+  const [paymentStatus, setPaymentStatus] = useState<SalaryRecord['paymentStatus']>('Paid');
   const [paymentDate, setPaymentDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    if (staffList.length > 0) {
-      if (!staffId || !staffList.some((s) => s.id === staffId)) {
-        const first = staffList[0];
-        setStaffId(first.id);
-        setBasicSalary(first.monthlySalary.toString());
+    if (isOpen) {
+      setError('');
+      if (salaryToEdit) {
+        setStaffId(salaryToEdit.staffId);
+        setMonth(salaryToEdit.month);
+        setBasicSalary(salaryToEdit.basicSalary.toString());
+        setBonus(salaryToEdit.bonus.toString());
+        setCommission(salaryToEdit.commission.toString());
+        setDeductions(salaryToEdit.deductions.toString());
+        setOtherPayments((salaryToEdit.otherPayments || 0).toString());
+        setPaymentStatus(salaryToEdit.paymentStatus);
+        setPaymentDate(salaryToEdit.paymentDate || new Date().toISOString().split('T')[0]);
+        setNotes(salaryToEdit.notes || '');
+      } else {
+        const activeStaff = staffList.filter((s) => s.status === 'Active');
+        const defaultStaff = activeStaff.length > 0 ? activeStaff[0] : staffList[0];
+        if (defaultStaff) {
+          setStaffId(defaultStaff.id);
+          setBasicSalary(defaultStaff.monthlySalary.toString());
+        } else {
+          setStaffId('');
+          setBasicSalary('0');
+        }
+        setMonth('September 2026');
+        setBonus('0');
+        setCommission('0');
+        setDeductions('0');
+        setOtherPayments('0');
+        setPaymentStatus('Paid');
+        setPaymentDate(new Date().toISOString().split('T')[0]);
+        setNotes('');
       }
     }
-  }, [staffList, staffId]);
+  }, [isOpen, salaryToEdit, staffList]);
 
   const handleStaffChange = (selectedId: string) => {
     setStaffId(selectedId);
@@ -61,6 +93,11 @@ export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({ isOpen, onClose 
     e.preventDefault();
     setError('');
 
+    if (!staffId || staffId.trim() === '') {
+      setError('Please select a staff member.');
+      return;
+    }
+
     if (staffList.length === 0) {
       setError('No staff members available. Please add a staff member first.');
       return;
@@ -71,13 +108,17 @@ export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({ isOpen, onClose 
       return;
     }
 
-    const selectedStaff = staffList.find((s) => s.id === staffId) || staffList[0];
+    const selectedStaff = staffList.find((s) => s.id === staffId);
+    if (!selectedStaff) {
+      setError('Please select a staff member.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      await addSalaryRecord({
-        staffId: selectedStaff ? selectedStaff.id : '',
-        staffName: selectedStaff ? selectedStaff.name : 'Staff Member',
+      const payload = {
+        staffId: selectedStaff.id,
+        staffName: selectedStaff.name,
         month,
         basicSalary: numBasic,
         bonus: numBonus,
@@ -87,13 +128,14 @@ export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({ isOpen, onClose 
         paymentStatus,
         paymentDate,
         notes: notes.trim(),
-      });
+      };
 
-      // Reset form on success
-      setBonus('0');
-      setDeductions('0');
-      setOtherPayments('0');
-      setNotes('');
+      if (salaryToEdit) {
+        await updateSalaryRecord(salaryToEdit.id, payload);
+      } else {
+        await addSalaryRecord(payload);
+      }
+
       setError('');
       onClose();
     } catch (err: any) {
@@ -103,9 +145,12 @@ export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({ isOpen, onClose 
     }
   };
 
+  const activeStaffList = staffList.filter((s) => s.status === 'Active');
+  const displayStaffList = activeStaffList.length > 0 ? activeStaffList : staffList;
+
   const staffOptions =
-    staffList.length > 0
-      ? staffList.map((s) => ({
+    displayStaffList.length > 0
+      ? displayStaffList.map((s) => ({
           value: s.id,
           label: `${s.name} - Monthly: Rs. ${s.monthlySalary.toLocaleString()}`,
         }))
@@ -113,16 +158,21 @@ export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({ isOpen, onClose 
 
   const statusOptions = [
     { value: 'Paid', label: 'Paid' },
-    { value: 'Processing', label: 'Processing' },
     { value: 'Pending', label: 'Pending' },
+    { value: 'Processing', label: 'Processing' },
+    { value: 'Partial', label: 'Partial' },
   ];
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="+ Add Salary Payment"
-      subtitle="Process staff payroll and calculate final payouts"
+      title={salaryToEdit ? 'Edit Salary Payment' : '+ Add Salary Payment'}
+      subtitle={
+        salaryToEdit
+          ? 'Update salary payment details in public.salary_payments'
+          : 'Process staff payroll and calculate final payouts'
+      }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
@@ -237,7 +287,7 @@ export const AddSalaryModal: React.FC<AddSalaryModalProps> = ({ isOpen, onClose 
             disabled={staffList.length === 0}
             icon={<CheckCircle className="w-4 h-4" />}
           >
-            Generate Salary Payout
+            {salaryToEdit ? 'Save Changes' : 'Generate Salary Payout'}
           </Button>
         </div>
       </form>

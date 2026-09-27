@@ -72,7 +72,7 @@ export interface SalaryRecord {
   deductions: number;
   otherPayments?: number;
   finalSalary: number;
-  paymentStatus: 'Paid' | 'Pending' | 'Processing';
+  paymentStatus: 'Paid' | 'Pending' | 'Processing' | 'Partial';
   paymentDate: string;
   notes?: string;
 }

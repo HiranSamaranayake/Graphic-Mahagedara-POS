@@ -16,26 +16,45 @@ export const fetchStaffFromDb = async (): Promise<StaffMember[]> => {
       return [];
     }
 
-    if (!data || data.length === 0) {
-      return [];
+    // Fetch daily_income to compute real staff performance statistics
+    const { data: incomeData } = await (supabase.from('daily_income') as any)
+      .select('staff_id, daily_total, number_of_jobs');
+
+    const staffPerfMap: { [id: string]: { jobs: number; revenue: number } } = {};
+    if (incomeData && Array.isArray(incomeData)) {
+      incomeData.forEach((inc: any) => {
+        if (inc.staff_id) {
+          if (!staffPerfMap[inc.staff_id]) {
+            staffPerfMap[inc.staff_id] = { jobs: 0, revenue: 0 };
+          }
+          staffPerfMap[inc.staff_id].jobs += Number(inc.number_of_jobs || 1);
+          staffPerfMap[inc.staff_id].revenue += Number(inc.daily_total || 0);
+        }
+      });
     }
 
-    return data.map((item: any) => ({
-      id: item.id,
-      name: item.full_name,
-      role: 'Graphic Designer',
-      phone: item.phone || '',
-      email: item.email || undefined,
-      joiningDate: item.joining_date || new Date().toISOString().split('T')[0],
-      salaryType: item.salary_type || 'Fixed',
-      monthlySalary: Number(item.monthly_salary || 0),
-      commissionPercentage: Number(item.commission_percentage || 0),
-      status: item.status || 'Active',
-      notes: item.notes || '',
-      jobsCompleted: 0,
-      revenueGenerated: 0,
-      commission: 0,
-    }));
+    return data.map((item: any) => {
+      const perf = staffPerfMap[item.id] || { jobs: 0, revenue: 0 };
+      const commPct = Number(item.commission_percentage || 0);
+      const computedCommission = (perf.revenue * commPct) / 100;
+
+      return {
+        id: item.id,
+        name: item.full_name,
+        role: 'Graphic Designer',
+        phone: item.phone || '',
+        email: item.email || undefined,
+        joiningDate: item.joining_date || new Date().toISOString().split('T')[0],
+        salaryType: item.salary_type || 'Fixed',
+        monthlySalary: Number(item.monthly_salary || 0),
+        commissionPercentage: commPct,
+        status: item.status || 'Active',
+        notes: item.notes || '',
+        jobsCompleted: perf.jobs,
+        revenueGenerated: perf.revenue,
+        commission: computedCommission,
+      };
+    });
   } catch (err) {
     console.error('Unexpected error fetching staff:', err);
     return [];

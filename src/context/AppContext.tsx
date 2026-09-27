@@ -26,7 +26,9 @@ import {
 import {
   fetchSalariesFromDb,
   addSalaryRecordToDb,
+  updateSalaryInDb,
   updateSalaryStatusInDb,
+  deleteSalaryFromDb,
 } from '../services/salaryService';
 
 interface AppContextType {
@@ -51,6 +53,8 @@ interface AppContextType {
   updateExpense: (id: string, expense: Omit<ExpenseRecord, 'id' | 'status'>) => Promise<void>;
   deleteExpense: (id: string) => Promise<void>;
   addSalaryRecord: (salary: Omit<SalaryRecord, 'id' | 'finalSalary'>) => Promise<void>;
+  updateSalaryRecord: (id: string, salary: Omit<SalaryRecord, 'id' | 'finalSalary'>) => Promise<void>;
+  deleteSalaryRecord: (id: string) => Promise<void>;
   updateSalaryStatus: (id: string, status: SalaryRecord['paymentStatus']) => Promise<void>;
 }
 
@@ -302,6 +306,51 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
+  const updateSalaryRecord = async (
+    id: string,
+    salaryData: Omit<SalaryRecord, 'id' | 'finalSalary'>
+  ) => {
+    try {
+      const updated = await updateSalaryInDb(id, salaryData);
+      setSalaryList((prev) =>
+        prev.map((item) => (item.id === id ? updated : item))
+      );
+      addToast({
+        type: 'success',
+        title: 'Salary Record Updated',
+        message: `Salary record updated in public.salary_payments.`,
+      });
+      await refreshData();
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Failed to Update Salary',
+        message: err?.message || 'Database update error occurred.',
+      });
+      throw err;
+    }
+  };
+
+  const deleteSalaryRecord = async (id: string) => {
+    try {
+      await deleteSalaryFromDb(id);
+      setSalaryList((prev) => prev.filter((item) => item.id !== id));
+      addToast({
+        type: 'info',
+        title: 'Salary Record Deleted',
+        message: 'Salary record removed from Supabase.',
+      });
+      await refreshData();
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Failed to Delete Salary',
+        message: err?.message || 'Database delete error occurred.',
+      });
+      throw err;
+    }
+  };
+
   const updateSalaryStatus = async (id: string, status: SalaryRecord['paymentStatus']) => {
     try {
       await updateSalaryStatusInDb(id, status);
@@ -348,6 +397,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateExpense,
         deleteExpense,
         addSalaryRecord,
+        updateSalaryRecord,
+        deleteSalaryRecord,
         updateSalaryStatus,
       }}
     >

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SummaryCards } from '../components/dashboard/SummaryCards';
+import { SalarySummaryCards } from '../components/dashboard/SalarySummaryCards';
 import { QuickActions } from '../components/dashboard/QuickActions';
 import { RevenueOverviewChart } from '../components/charts/RevenueOverviewChart';
 import { RevenueVsExpensesChart } from '../components/charts/RevenueVsExpensesChart';
@@ -72,6 +73,9 @@ export const Dashboard: React.FC = () => {
 
       {/* Summary Cards */}
       <SummaryCards />
+
+      {/* Real-time Salary Summary Cards */}
+      <SalarySummaryCards />
 
       {/* Quick Action Controls */}
       <QuickActions
