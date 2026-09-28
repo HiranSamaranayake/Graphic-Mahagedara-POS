@@ -76,6 +76,11 @@ export const StaffAccounts: React.FC = () => {
       return;
     }
 
+    if (!staffCategory || !['Call Center Operator', 'Graphic Designer'].includes(staffCategory)) {
+      setErrorMsg('Please select a valid Staff Category (Call Center Operator or Graphic Designer).');
+      return;
+    }
+
     setCreating(true);
 
     try {
@@ -95,6 +100,17 @@ export const StaffAccounts: React.FC = () => {
 
       if (data?.error) {
         throw new Error(data.error);
+      }
+
+      // Explicitly update profiles & staff records to guarantee category persistence
+      if (data?.user?.id) {
+        await (supabase.from('profiles') as any)
+          .update({ staff_category: staffCategory })
+          .eq('id', data.user.id);
+        
+        await (supabase.from('staff') as any)
+          .update({ staff_category: staffCategory })
+          .eq('user_id', data.user.id);
       }
 
       setSuccessMsg(`Staff login account successfully created for ${cleanName} (${cleanEmail}) as ${staffCategory}!`);

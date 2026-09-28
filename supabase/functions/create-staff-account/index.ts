@@ -74,7 +74,8 @@ serve(async (req) => {
     const cleanName = (fullName || '').trim();
     const cleanEmail = (email || '').trim().toLowerCase();
     const cleanPassword = temporaryPassword || '';
-    const cleanCategory = staffCategory === 'Graphic Designer' ? 'Graphic Designer' : 'Call Center Operator';
+
+    const ALLOWED_CATEGORIES = ['Call Center Operator', 'Graphic Designer'];
 
     if (!cleanName || !cleanEmail || !cleanPassword) {
       return new Response(
@@ -82,6 +83,15 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    if (!staffCategory || !ALLOWED_CATEGORIES.includes(staffCategory)) {
+      return new Response(
+        JSON.stringify({ error: 'Staff category is required and must be either "Call Center Operator" or "Graphic Designer".' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const cleanCategory = staffCategory;
 
     if (cleanPassword.length < 6) {
       return new Response(

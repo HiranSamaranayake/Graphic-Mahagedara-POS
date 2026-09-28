@@ -33,14 +33,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const fetchUserProfile = async (userId: string, userEmail: string) => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const metaCategory = session?.user?.user_metadata?.staff_category as StaffCategory | undefined;
+
       const { data } = await (supabase.from('profiles') as any)
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
+      // Check public.staff if needed
+      const { data: stfData } = await (supabase.from('staff') as any)
+        .select('staff_category')
+        .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+        .maybeSingle();
+
+      const userCategory: StaffCategory =
+        (data?.staff_category as StaffCategory) ||
+        (stfData?.staff_category as StaffCategory) ||
+        metaCategory ||
+        'Call Center Operator';
+
       if (data) {
         const userRole: Role = data.role === 'admin' ? 'Admin' : 'Staff';
-        const userCategory: StaffCategory = data.staff_category === 'Graphic Designer' ? 'Graphic Designer' : 'Call Center Operator';
         setProfile({
           id: data.id,
           fullName: data.full_name,
@@ -56,7 +70,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Profile does not exist in public.profiles yet. Auto-create matching profile row for auth.users.id
       console.warn(`Profile missing in public.profiles for auth user ${userId}. Auto-creating matching profile...`);
       const fallbackRoleStr = userEmail.includes('admin') ? 'admin' : 'staff';
-      const fallbackCategoryStr: StaffCategory = userEmail.includes('designer') ? 'Graphic Designer' : 'Call Center Operator';
       const fullNameStr = SPLIT_NAME(userEmail);
 
       const { data: insertedData, error: insertErr } = await (supabase.from('profiles') as any)
@@ -66,7 +79,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             full_name: fullNameStr,
             email: userEmail,
             role: fallbackRoleStr,
-            staff_category: fallbackCategoryStr,
+            staff_category: userCategory,
           },
         ])
         .select('*')
@@ -80,14 +93,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           fullName: fullNameStr,
           email: userEmail,
           role: fallbackRole,
-          staffCategory: fallbackCategoryStr,
+          staffCategory: userCategory,
         });
         setRole(fallbackRole);
         return;
       }
 
       const userRole: Role = insertedData.role === 'admin' ? 'Admin' : 'Staff';
-      const userCategory: StaffCategory = insertedData.staff_category === 'Graphic Designer' ? 'Graphic Designer' : 'Call Center Operator';
       setProfile({
         id: insertedData.id,
         fullName: insertedData.full_name,

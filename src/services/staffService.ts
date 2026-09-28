@@ -86,9 +86,13 @@ export const addStaffToDb = async (
     throw new Error('Authentication session required. Please sign in to add a staff member.');
   }
 
+  if (!staffData.staffCategory) {
+    throw new Error('Staff Category is required.');
+  }
+
   const payload = {
     full_name: staffData.name.trim(),
-    staff_category: staffData.staffCategory || 'Call Center Operator',
+    staff_category: staffData.staffCategory,
     email: staffData.email ? staffData.email.trim() : null,
     phone: staffData.phone ? staffData.phone.trim() : null,
     joining_date: staffData.joiningDate,
