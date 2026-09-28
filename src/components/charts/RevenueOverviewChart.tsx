@@ -20,39 +20,39 @@ export const RevenueOverviewChart: React.FC = () => {
 
   // Compute monthly totals dynamically from real daily_income records
   const getMonthlyData = () => {
-    if (dailyIncomeList.length === 0) return [];
+    const monthsCount = timeframe === '6m' ? 6 : timeframe === '12m' ? 12 : new Date().getMonth() + 1;
+    const months: { key: string; label: string; revenue: number; jobs: number }[] = [];
+    const now = new Date();
 
-    const monthMap: { [key: string]: { month: string; revenue: number; jobs: number } } = {};
+    for (let i = monthsCount - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = d.toISOString().substring(0, 7); // YYYY-MM
+      const label = d.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+      months.push({ key, label, revenue: 0, jobs: 0 });
+    }
 
-    dailyIncomeList.forEach((item) => {
-      const monthKey = item.date.substring(0, 7); // YYYY-MM
-      const date = new Date(item.date);
-      const monthLabel = date.toLocaleString('en-US', { month: 'short', year: '2-digit' });
-
-      if (!monthMap[monthKey]) {
-        monthMap[monthKey] = { month: monthLabel, revenue: 0, jobs: 0 };
-      }
-      monthMap[monthKey].revenue += item.dailyTotal;
-      monthMap[monthKey].jobs += item.jobsCount;
+    months.forEach((m) => {
+      const incRecords = dailyIncomeList.filter((item) => item.date.startsWith(m.key));
+      m.revenue = incRecords.reduce((sum, item) => sum + item.dailyTotal, 0);
+      m.jobs = incRecords.reduce((sum, item) => sum + item.jobsCount, 0);
     });
 
-    return Object.keys(monthMap)
-      .sort()
-      .map((k) => monthMap[k]);
+    return months;
   };
 
   const chartData = getMonthlyData();
+  const hasData = dailyIncomeList.length > 0;
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-slate-900 border border-slate-700/80 p-3 rounded-xl shadow-2xl text-xs">
-          <p className="font-bold text-slate-200 mb-1">{label}</p>
-          <div className="flex items-center gap-2 text-purple-400 font-semibold">
+        <div className="bg-white border border-slate-200 p-3 rounded-xl shadow-xl text-xs">
+          <p className="font-extrabold text-slate-900 mb-1">{label}</p>
+          <div className="flex items-center gap-2 text-teal-600 font-bold">
             <span>Revenue:</span>
             <span>{formatCurrency(payload[0].value)}</span>
           </div>
-          <div className="flex items-center gap-2 text-slate-400 text-[11px] mt-0.5">
+          <div className="flex items-center gap-2 text-slate-500 text-[11px] font-medium mt-0.5">
             <span>Jobs Completed:</span>
             <span>{payload[0].payload.jobs}</span>
           </div>
@@ -63,33 +63,33 @@ export const RevenueOverviewChart: React.FC = () => {
   };
 
   const selector = (
-    <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+    <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
       <button
         onClick={() => setTimeframe('6m')}
-        className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+        className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
           timeframe === '6m'
-            ? 'bg-purple-600 text-white shadow-sm'
-            : 'text-slate-400 hover:text-slate-200'
+            ? 'bg-teal-500 text-white shadow-xs'
+            : 'text-slate-600 hover:text-slate-900'
         }`}
       >
         6 Months
       </button>
       <button
         onClick={() => setTimeframe('12m')}
-        className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+        className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
           timeframe === '12m'
-            ? 'bg-purple-600 text-white shadow-sm'
-            : 'text-slate-400 hover:text-slate-200'
+            ? 'bg-teal-500 text-white shadow-xs'
+            : 'text-slate-600 hover:text-slate-900'
         }`}
       >
         12 Months
       </button>
       <button
         onClick={() => setTimeframe('year')}
-        className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+        className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
           timeframe === 'year'
-            ? 'bg-purple-600 text-white shadow-sm'
-            : 'text-slate-400 hover:text-slate-200'
+            ? 'bg-teal-500 text-white shadow-xs'
+            : 'text-slate-600 hover:text-slate-900'
         }`}
       >
         This Year
@@ -100,14 +100,14 @@ export const RevenueOverviewChart: React.FC = () => {
   return (
     <ChartCard
       title="Revenue Overview"
-      subtitle="Monthly gross income progression calculated from Supabase database"
+      subtitle="Monthly gross income progression calculated dynamically from Supabase database"
       action={selector}
     >
-      {chartData.length === 0 ? (
+      {!hasData ? (
         <EmptyState
           title="No financial data available yet"
           description="Start recording daily income to see monthly revenue trends."
-          icon={<BarChart3 className="w-10 h-10 text-purple-400" />}
+          icon={<BarChart3 className="w-10 h-10 text-teal-600" />}
         />
       ) : (
         <div className="w-full h-64 sm:h-72">
@@ -115,12 +115,12 @@ export const RevenueOverviewChart: React.FC = () => {
             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0.0} />
+                  <stop offset="5%" stopColor="#0d9488" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#0d9488" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-              <XAxis dataKey="month" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis dataKey="label" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
               <YAxis
                 stroke="#64748b"
                 fontSize={11}
@@ -132,7 +132,7 @@ export const RevenueOverviewChart: React.FC = () => {
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="#8b5cf6"
+                stroke="#0d9488"
                 strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#revenueGradient)"

@@ -10,7 +10,15 @@ import type { ExpenseRecord } from '../types';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { Plus, Search, CreditCard, Tag, UserCheck, ShieldAlert, Edit3, Trash2 } from 'lucide-react';
 
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
 export const Expenses: React.FC = () => {
+  const { role, profile } = useAuth();
+  if (role === 'Staff' && profile?.staffCategory === 'Graphic Designer') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   const { expenseList, deleteExpense } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState<ExpenseRecord | null>(null);
@@ -69,7 +77,7 @@ export const Expenses: React.FC = () => {
   const columns: Column<ExpenseRecord>[] = [
     {
       header: 'Date',
-      accessor: (row) => <span className="font-medium text-slate-300">{formatDate(row.date)}</span>,
+      accessor: (row) => <span className="font-medium text-slate-600">{formatDate(row.date)}</span>,
     },
     {
       header: 'Category',
@@ -84,16 +92,16 @@ export const Expenses: React.FC = () => {
       header: 'Description',
       accessor: (row) => (
         <div>
-          <p className="font-semibold text-white">{row.description}</p>
-          {row.notes && <p className="text-xs text-slate-400 mt-0.5">{row.notes}</p>}
+          <p className="font-bold text-slate-900">{row.description}</p>
+          {row.notes && <p className="text-xs text-slate-500 font-medium mt-0.5">{row.notes}</p>}
         </div>
       ),
     },
     {
       header: 'Paid By',
       accessor: (row) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-300">
-          <UserCheck className="w-3.5 h-3.5 text-purple-400" />
+        <div className="flex items-center gap-1.5 text-xs text-slate-700 font-semibold">
+          <UserCheck className="w-3.5 h-3.5 text-teal-600" />
           <span>{row.paidBy}</span>
         </div>
       ),
@@ -101,7 +109,7 @@ export const Expenses: React.FC = () => {
     {
       header: 'Amount',
       accessor: (row) => (
-        <span className="font-extrabold text-rose-400 text-base">{formatCurrency(row.amount)}</span>
+        <span className="font-extrabold text-rose-600 text-base">{formatCurrency(row.amount)}</span>
       ),
     },
     {
@@ -111,14 +119,14 @@ export const Expenses: React.FC = () => {
           <Badge variant={row.status === 'Paid' ? 'success' : 'warning'}>{row.status}</Badge>
           <button
             onClick={() => handleOpenEdit(row)}
-            className="p-1.5 text-slate-400 hover:text-yellow-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
             title="Edit Expense Record"
           >
             <Edit3 className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleDelete(row.id)}
-            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
             title="Delete Expense Record"
           >
             <Trash2 className="w-4 h-4" />
@@ -146,49 +154,49 @@ export const Expenses: React.FC = () => {
 
       {/* Expense Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between">
+        <div className="p-5 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-xs">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase">Total Monthly Expenses</p>
-            <h3 className="text-2xl font-extrabold text-rose-400 mt-1">
+            <p className="text-xs font-bold text-slate-500 uppercase">Total Monthly Expenses</p>
+            <h3 className="text-2xl font-black text-rose-600 mt-1">
               {formatCurrency(totalExpenseSum)}
             </h3>
           </div>
-          <div className="p-3 bg-rose-950/40 text-rose-400 border border-rose-500/30 rounded-xl">
+          <div className="p-3 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl">
             <CreditCard className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between">
+        <div className="p-5 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-xs">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase">Facebook Ads & Boosting</p>
-            <h3 className="text-2xl font-extrabold text-purple-400 mt-1">
+            <p className="text-xs font-bold text-slate-500 uppercase">Facebook Ads & Boosting</p>
+            <h3 className="text-2xl font-black text-teal-600 mt-1">
               {formatCurrency(fbBoostTotal)}
             </h3>
           </div>
-          <div className="p-3 bg-purple-950/40 text-purple-400 border border-purple-500/30 rounded-xl">
+          <div className="p-3 bg-teal-50 text-teal-600 border border-teal-200 rounded-xl">
             <Tag className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between">
+        <div className="p-5 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-xs">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase">Expense Count</p>
-            <h3 className="text-2xl font-extrabold text-white mt-1">{expenseList.length} Records</h3>
+            <p className="text-xs font-bold text-slate-500 uppercase">Expense Count</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">{expenseList.length} Records</h3>
           </div>
-          <div className="p-3 bg-slate-800 text-slate-300 rounded-xl border border-slate-700">
+          <div className="p-3 bg-slate-100 text-slate-700 rounded-xl border border-slate-200">
             <ShieldAlert className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* Search & Category Filter */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/60 p-4 border border-slate-800 rounded-2xl">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 border border-slate-200 rounded-2xl shadow-xs">
         <div className="w-full sm:w-80">
           <Input
             placeholder="Search by description, category, payer..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            icon={<Search className="w-4 h-4" />}
+            icon={<Search className="w-4 h-4 text-teal-600" />}
           />
         </div>
 
@@ -197,10 +205,10 @@ export const Expenses: React.FC = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
                 selectedCategory === cat
-                  ? 'bg-purple-600 text-white shadow-sm'
-                  : 'bg-slate-800/80 text-slate-400 hover:text-white'
+                  ? 'bg-teal-500 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               {cat}
@@ -225,4 +233,3 @@ export const Expenses: React.FC = () => {
     </div>
   );
 };
-

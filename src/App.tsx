@@ -12,6 +12,8 @@ import { Salaries } from './pages/Salaries';
 import { Analytics } from './pages/Analytics';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
+import { StaffAccounts } from './pages/StaffAccounts';
+import { DailyPostCount } from './pages/DailyPostCount';
 import { Login } from './pages/Login';
 
 export const App: React.FC = () => {
@@ -54,7 +56,26 @@ export const App: React.FC = () => {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="/daily-post-count"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <DailyPostCount />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/salaries"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <Salaries />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
             {/* Admin Restricted Routes */}
             <Route
               path="/staff"
@@ -67,11 +88,11 @@ export const App: React.FC = () => {
               }
             />
             <Route
-              path="/salaries"
+              path="/staff-accounts"
               element={
                 <ProtectedRoute allowedRoles={['Admin']}>
                   <MainLayout>
-                    <Salaries />
+                    <StaffAccounts />
                   </MainLayout>
                 </ProtectedRoute>
               }

@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="min-h-screen flex bg-slate-950 text-slate-100 font-sans selection:bg-purple-600">
+    <div className="min-h-screen flex bg-slate-50 text-slate-900 font-sans selection:bg-teal-400 selection:text-black">
       {/* Sidebar */}
       <Sidebar />
 
@@ -19,14 +19,14 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         </main>
 
         {/* Mobile Bottom Navigation Bar for quick access */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 px-2 py-2 flex items-center justify-around">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200 px-2 py-2 flex items-center justify-around shadow-lg">
           {navItems.slice(0, 5).map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
                 `flex flex-col items-center gap-1 p-2 rounded-xl text-[10px] font-medium transition-colors ${
-                  isActive ? 'text-purple-400 font-bold bg-purple-950/40' : 'text-slate-400 hover:text-slate-200'
+                  isActive ? 'text-teal-700 font-bold bg-teal-50 border border-teal-200' : 'text-slate-500 hover:text-slate-900'
                 }`
               }
             >

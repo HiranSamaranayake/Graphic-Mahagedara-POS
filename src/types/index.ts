@@ -1,5 +1,7 @@
 export type Role = 'Admin' | 'Staff';
 
+export type StaffCategory = 'Call Center Operator' | 'Graphic Designer';
+
 export type SalaryType =
   | 'Fixed Monthly'
   | 'Fixed'
@@ -26,6 +28,7 @@ export interface StaffMember {
   id: string;
   name: string;
   role: string;
+  staffCategory?: StaffCategory;
   phone: string;
   email?: string;
   joiningDate: string;
@@ -100,4 +103,15 @@ export interface ToastMessage {
   type: 'success' | 'error' | 'info' | 'warning';
   title: string;
   message: string;
+}
+
+export interface DailyPostCountRecord {
+  id: string;
+  staffId: string;
+  staffName?: string;
+  postDate: string;
+  postCount: number;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

@@ -11,16 +11,16 @@ export interface EmptyStateProps {
 export const EmptyState: React.FC<EmptyStateProps> = ({
   title = 'No Data Available',
   description = 'There are no records to display at this time.',
-  icon = <FolderOpen className="w-12 h-12 text-slate-500" />,
+  icon = <FolderOpen className="w-12 h-12 text-teal-600" />,
   action,
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-slate-900/60 border border-slate-800 rounded-2xl">
-      <div className="p-4 bg-slate-800/80 rounded-2xl mb-4 text-purple-400 border border-slate-700/50">
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-white border border-slate-200 rounded-2xl shadow-xs">
+      <div className="p-4 bg-teal-50 rounded-2xl mb-4 text-teal-600 border border-teal-200">
         {icon}
       </div>
-      <h3 className="text-base font-bold text-slate-100">{title}</h3>
-      <p className="text-xs text-slate-400 max-w-sm mt-1 mb-6">{description}</p>
+      <h3 className="text-base font-bold text-slate-900">{title}</h3>
+      <p className="text-xs text-slate-500 max-w-sm mt-1 mb-6 font-medium">{description}</p>
       {action}
     </div>
   );

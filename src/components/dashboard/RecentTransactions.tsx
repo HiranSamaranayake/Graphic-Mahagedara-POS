@@ -36,14 +36,14 @@ export const RecentTransactions: React.FC = () => {
     {
       header: 'Date',
       accessor: 'date',
-      className: 'font-medium text-slate-300',
+      className: 'font-medium text-slate-600',
     },
     {
       header: 'Type',
       accessor: (row) => (
         <span
           className={`inline-flex items-center gap-1 text-xs font-bold ${
-            row.type === 'Income' ? 'text-emerald-400' : 'text-rose-400'
+            row.type === 'Income' ? 'text-emerald-600' : 'text-rose-600'
           }`}
         >
           {row.type === 'Income' ? (
@@ -58,18 +58,18 @@ export const RecentTransactions: React.FC = () => {
     {
       header: 'Description',
       accessor: 'description',
-      className: 'font-semibold text-slate-100',
+      className: 'font-bold text-slate-900',
     },
     {
       header: 'Staff / Paid By',
       accessor: 'staff',
-      className: 'text-slate-300',
+      className: 'text-slate-600 font-medium',
     },
     {
       header: 'Amount',
       accessor: (row) => (
         <span
-          className={`font-bold ${row.type === 'Income' ? 'text-emerald-400' : 'text-slate-200'}`}
+          className={`font-bold ${row.type === 'Income' ? 'text-emerald-600' : 'text-slate-900'}`}
         >
           {formatCurrency(row.amount)}
         </span>
@@ -94,17 +94,17 @@ export const RecentTransactions: React.FC = () => {
   ];
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl shadow-slate-950/40">
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+          <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
             Recent Transactions
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 font-medium mt-0.5">
             Latest financial activities fetched from Supabase
           </p>
         </div>
-        <span className="text-xs font-semibold text-purple-400">Live Database Feed</span>
+        <span className="text-xs font-extrabold text-teal-600">Live Database Feed</span>
       </div>
 
       <Table

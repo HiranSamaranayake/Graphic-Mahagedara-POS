@@ -61,3 +61,24 @@ Admin accounts are managed securely through Supabase Auth. Follow these steps to
 - **Service Role Key**: The `service_role` key is **NEVER** exposed in frontend code.
 - **Admin Access**: Users with `role = 'admin'` in `public.profiles` have full read/write access across all tables.
 - **Staff Access**: Staff members have restricted access and cannot access admin routes or unauthorized queries.
+
+---
+
+## 6. Deploy Edge Function: `create-staff-account`
+Admin Staff login account creation is executed securely via a server-side Supabase Edge Function using `auth.admin.createUser()`.
+
+### Deployment Instructions:
+1. Install Supabase CLI (if not already installed):
+   ```bash
+   npx supabase login
+   ```
+2. Link your project:
+   ```bash
+   npx supabase link --project-ref your-project-id
+   ```
+3. Deploy the Edge Function:
+   ```bash
+   npx supabase functions deploy create-staff-account --no-verify-jwt
+   ```
+4. Verify function secret:
+   Supabase automatically injects `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` into deployed Edge Functions. No manual secret configuration is needed.

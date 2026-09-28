@@ -56,14 +56,14 @@ export const Settings: React.FC = () => {
       />
 
       {/* Business Information Section */}
-      <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl space-y-5">
-        <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-          <div className="p-2 bg-purple-950 text-purple-400 border border-purple-800 rounded-xl">
+      <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-5">
+        <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+          <div className="p-2 bg-teal-50 text-teal-600 border border-teal-200 rounded-xl">
             <Building2 className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">Business Information</h3>
-            <p className="text-xs text-slate-400">Official company details displayed on receipts & reports</p>
+            <h3 className="text-base font-bold text-slate-900">Business Information</h3>
+            <p className="text-xs text-slate-500 font-medium">Official company details displayed on receipts & reports</p>
           </div>
         </div>
 
@@ -73,7 +73,7 @@ export const Settings: React.FC = () => {
               label="Business Name"
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              icon={<Building2 className="w-4 h-4 text-purple-400" />}
+              icon={<Building2 className="w-4 h-4 text-teal-600" />}
               required
             />
 
@@ -81,7 +81,7 @@ export const Settings: React.FC = () => {
               label="Contact Phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              icon={<Phone className="w-4 h-4 text-purple-400" />}
+              icon={<Phone className="w-4 h-4 text-teal-600" />}
             />
           </div>
 
@@ -91,14 +91,14 @@ export const Settings: React.FC = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              icon={<Mail className="w-4 h-4 text-purple-400" />}
+              icon={<Mail className="w-4 h-4 text-teal-600" />}
             />
 
             <Input
               label="Default Currency"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              icon={<DollarSign className="w-4 h-4 text-emerald-400" />}
+              icon={<DollarSign className="w-4 h-4 text-emerald-600" />}
             />
           </div>
 
@@ -106,7 +106,7 @@ export const Settings: React.FC = () => {
             label="Studio Address"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            icon={<MapPin className="w-4 h-4 text-purple-400" />}
+            icon={<MapPin className="w-4 h-4 text-teal-600" />}
           />
 
           <div className="flex justify-end pt-2">
@@ -118,22 +118,22 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* System Settings & Theme */}
-      <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl space-y-5">
-        <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-          <div className="p-2 bg-purple-950 text-purple-400 border border-purple-800 rounded-xl">
+      <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-5">
+        <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+          <div className="p-2 bg-teal-50 text-teal-600 border border-teal-200 rounded-xl">
             <Sun className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">System Settings</h3>
-            <p className="text-xs text-slate-400">Visual theme mode & notification controls</p>
+            <h3 className="text-base font-bold text-slate-900">System Settings</h3>
+            <p className="text-xs text-slate-500 font-medium">Visual theme mode & notification controls</p>
           </div>
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-slate-950/60 rounded-xl border border-slate-800">
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
             <div>
-              <h4 className="text-sm font-bold text-white">Appearance Theme</h4>
-              <p className="text-xs text-slate-400">Current active theme: {theme.toUpperCase()}</p>
+              <h4 className="text-sm font-bold text-slate-900">Appearance Theme</h4>
+              <p className="text-xs text-slate-500 font-medium">Current active theme: {theme.toUpperCase()}</p>
             </div>
             <Button
               variant="secondary"
@@ -145,23 +145,23 @@ export const Settings: React.FC = () => {
             </Button>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-slate-950/60 rounded-xl border border-slate-800">
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
             <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-purple-400" />
+              <Bell className="w-5 h-5 text-teal-600" />
               <div>
-                <h4 className="text-sm font-bold text-white">System Notifications</h4>
-                <p className="text-xs text-slate-400">Receive alerts for income submissions & expenses</p>
+                <h4 className="text-sm font-bold text-slate-900">System Notifications</h4>
+                <p className="text-xs text-slate-500 font-medium">Receive alerts for income submissions & expenses</p>
               </div>
             </div>
             <button
               type="button"
               onClick={() => setNotificationsEnabled(!notificationsEnabled)}
               className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                notificationsEnabled ? 'bg-purple-600' : 'bg-slate-700'
+                notificationsEnabled ? 'bg-teal-500' : 'bg-slate-300'
               }`}
             >
               <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
                   notificationsEnabled ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />
@@ -171,14 +171,14 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* User Profile Section */}
-      <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl space-y-5">
-        <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-          <div className="p-2 bg-purple-950 text-purple-400 border border-purple-800 rounded-xl">
+      <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-5">
+        <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+          <div className="p-2 bg-teal-50 text-teal-600 border border-teal-200 rounded-xl">
             <User className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">User Profile</h3>
-            <p className="text-xs text-slate-400">Manage administrator account details</p>
+            <h3 className="text-base font-bold text-slate-900">User Profile</h3>
+            <p className="text-xs text-slate-500 font-medium">Manage administrator account details</p>
           </div>
         </div>
 
@@ -188,7 +188,7 @@ export const Settings: React.FC = () => {
               label="Full Name"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              icon={<User className="w-4 h-4 text-purple-400" />}
+              icon={<User className="w-4 h-4 text-teal-600" />}
               required
             />
 
@@ -197,14 +197,14 @@ export const Settings: React.FC = () => {
               type="email"
               value={userEmail}
               onChange={(e) => setUserEmail(e.target.value)}
-              icon={<Mail className="w-4 h-4 text-purple-400" />}
+              icon={<Mail className="w-4 h-4 text-teal-600" />}
               required
             />
           </div>
 
-          <div className="flex items-center gap-2 p-3 bg-purple-950/30 border border-purple-800/40 rounded-xl text-xs text-purple-200">
-            <ShieldCheck className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Assigned Role: <strong>System Administrator (Admin)</strong></span>
+          <div className="flex items-center gap-2 p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-900 font-medium">
+            <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0" />
+            <span>Assigned Role: <strong className="text-teal-950 font-bold">System Administrator (Admin)</strong></span>
           </div>
 
           <div className="flex justify-end pt-2">

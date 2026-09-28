@@ -19,12 +19,12 @@ export const Staff: React.FC = () => {
       header: 'Staff Member',
       accessor: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-purple-950/80 border border-purple-800 text-purple-300 flex items-center justify-center font-extrabold text-sm shadow-sm">
+          <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center font-extrabold text-sm shadow-xs">
             {row.name.charAt(0)}
           </div>
           <div>
-            <p className="font-bold text-white">{row.name}</p>
-            <p className="text-xs text-slate-400">{row.email}</p>
+            <p className="font-bold text-slate-900">{row.name}</p>
+            <p className="text-xs text-slate-500">{row.email}</p>
           </div>
         </div>
       ),
@@ -32,29 +32,43 @@ export const Staff: React.FC = () => {
     {
       header: 'Role / Title',
       accessor: (row) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-300">
-          <Briefcase className="w-3.5 h-3.5 text-purple-400" />
-          <span className="font-semibold">{row.role}</span>
+        <div className="flex items-center gap-1.5 text-xs text-slate-700 font-semibold">
+          <Briefcase className="w-3.5 h-3.5 text-teal-600" />
+          <span>{row.role}</span>
         </div>
+      ),
+    },
+    {
+      header: 'Staff Category',
+      accessor: (row) => (
+        <span
+          className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${
+            row.staffCategory === 'Graphic Designer'
+              ? 'bg-cyan-50 text-cyan-800 border-cyan-200'
+              : 'bg-teal-50 text-teal-800 border-teal-200'
+          }`}
+        >
+          {row.staffCategory || 'Call Center Operator'}
+        </span>
       ),
     },
     {
       header: 'Phone',
       accessor: (row) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-300">
-          <Phone className="w-3.5 h-3.5 text-purple-400" />
+        <div className="flex items-center gap-1.5 text-xs text-slate-600">
+          <Phone className="w-3.5 h-3.5 text-teal-600" />
           <span>{row.phone}</span>
         </div>
       ),
     },
     {
       header: 'Joining Date',
-      accessor: (row) => <span className="text-xs text-slate-400">{formatDate(row.joiningDate)}</span>,
+      accessor: (row) => <span className="text-xs text-slate-500">{formatDate(row.joiningDate)}</span>,
     },
     {
       header: 'Salary Type',
       accessor: (row) => (
-        <span className="px-2.5 py-1 bg-slate-800/80 text-purple-300 rounded-lg text-xs font-semibold border border-slate-700">
+        <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold border border-slate-200">
           {row.salaryType}
         </span>
       ),
@@ -62,7 +76,7 @@ export const Staff: React.FC = () => {
     {
       header: 'Basic Monthly Salary',
       accessor: (row) => (
-        <span className="font-bold text-slate-100">{formatCurrency(row.monthlySalary)}</span>
+        <span className="font-bold text-slate-900">{formatCurrency(row.monthlySalary)}</span>
       ),
     },
     {
@@ -90,13 +104,13 @@ export const Staff: React.FC = () => {
       />
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
         <button
           onClick={() => setActiveTab('roster')}
           className={`px-4 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
             activeTab === 'roster'
-              ? 'bg-purple-600 text-white shadow-md shadow-purple-900/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              ? 'bg-teal-500 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
           Staff Directory & Roster ({staffList.length})
@@ -105,8 +119,8 @@ export const Staff: React.FC = () => {
           onClick={() => setActiveTab('performance')}
           className={`px-4 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === 'performance'
-              ? 'bg-purple-600 text-white shadow-md shadow-purple-900/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              ? 'bg-teal-500 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
           <Award className="w-4 h-4" />
@@ -128,10 +142,10 @@ export const Staff: React.FC = () => {
       {activeTab === 'performance' && (
         <div className="space-y-6">
           {/* Concept Explanation Banner */}
-          <div className="p-4 bg-purple-950/40 border border-purple-800/50 rounded-2xl flex items-start gap-3">
-            <Award className="w-5 h-5 text-purple-400 mt-0.5 shrink-0" />
-            <div className="text-xs text-purple-200">
-              <strong className="block text-sm font-bold text-white mb-0.5">
+          <div className="p-4 bg-teal-50 border border-teal-200 rounded-2xl flex items-start gap-3">
+            <Award className="w-5 h-5 text-teal-600 mt-0.5 shrink-0" />
+            <div className="text-xs text-teal-900">
+              <strong className="block text-sm font-bold text-slate-900 mb-0.5">
                 Financial Metrics Structure Notice
               </strong>
               <p>
@@ -148,16 +162,16 @@ export const Staff: React.FC = () => {
               return (
                 <div
                   key={stf.id}
-                  className="bg-slate-900 border border-slate-800 hover:border-purple-500/40 rounded-2xl p-5 shadow-xl transition-all duration-200"
+                  className="bg-white border border-slate-200 hover:border-teal-400 rounded-2xl p-5 shadow-xs transition-all duration-200"
                 >
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-700 to-indigo-600 flex items-center justify-center font-extrabold text-white text-base shadow-md">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-cyan-600 flex items-center justify-center font-extrabold text-white text-base shadow-xs">
                         {stf.name.charAt(0)}
                       </div>
                       <div>
-                        <h4 className="font-bold text-white text-sm">{stf.name}</h4>
-                        <span className="text-[11px] text-purple-400 font-medium">{stf.role}</span>
+                        <h4 className="font-bold text-slate-900 text-sm">{stf.name}</h4>
+                        <span className="text-[11px] text-teal-600 font-bold">{stf.role}</span>
                       </div>
                     </div>
                     <Badge variant={stf.status === 'Active' ? 'success' : 'neutral'}>
@@ -166,39 +180,39 @@ export const Staff: React.FC = () => {
                   </div>
 
                   <div className="space-y-3 text-xs">
-                    <div className="flex justify-between items-center p-2.5 bg-slate-950/60 rounded-xl border border-slate-800/60">
-                      <span className="text-slate-400 font-medium">Jobs Completed:</span>
-                      <span className="font-extrabold text-purple-300">{stf.jobsCompleted} Jobs</span>
+                    <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="text-slate-500 font-bold">Jobs Completed:</span>
+                      <span className="font-extrabold text-teal-700">{stf.jobsCompleted} Jobs</span>
                     </div>
 
                     {/* Revenue Generated */}
-                    <div className="flex justify-between items-center p-2.5 bg-emerald-950/30 rounded-xl border border-emerald-500/30">
-                      <div className="flex items-center gap-1.5 text-emerald-400">
+                    <div className="flex justify-between items-center p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                      <div className="flex items-center gap-1.5 text-emerald-700">
                         <TrendingUp className="w-4 h-4" />
                         <span className="font-bold">Revenue Generated:</span>
                       </div>
-                      <span className="font-extrabold text-emerald-400 text-sm">
+                      <span className="font-extrabold text-emerald-700 text-sm">
                         {formatCurrency(stf.revenueGenerated)}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center px-1">
-                      <span className="text-slate-400">Monthly Salary Base:</span>
-                      <span className="font-bold text-slate-200">{formatCurrency(stf.monthlySalary)}</span>
+                      <span className="text-slate-500 font-medium">Monthly Salary Base:</span>
+                      <span className="font-bold text-slate-900">{formatCurrency(stf.monthlySalary)}</span>
                     </div>
 
                     <div className="flex justify-between items-center px-1">
-                      <span className="text-slate-400">Commission Earned:</span>
-                      <span className="font-bold text-purple-300">{formatCurrency(stf.commission)}</span>
+                      <span className="text-slate-500 font-medium">Commission Earned:</span>
+                      <span className="font-bold text-teal-700">{formatCurrency(stf.commission)}</span>
                     </div>
 
                     {/* Staff Earnings (Separate Concept) */}
-                    <div className="flex justify-between items-center p-2.5 bg-purple-950/40 rounded-xl border border-purple-500/30 pt-3">
-                      <div className="flex items-center gap-1.5 text-purple-300">
-                        <DollarSign className="w-4 h-4 text-purple-400" />
+                    <div className="flex justify-between items-center p-2.5 bg-teal-50 rounded-xl border border-teal-200 pt-3">
+                      <div className="flex items-center gap-1.5 text-teal-800">
+                        <DollarSign className="w-4 h-4 text-teal-600" />
                         <span className="font-bold">Staff Earnings:</span>
                       </div>
-                      <span className="font-extrabold text-purple-200 text-sm">
+                      <span className="font-extrabold text-teal-900 text-sm">
                         {formatCurrency(staffEarnings)}
                       </span>
                     </div>

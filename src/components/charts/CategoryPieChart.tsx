@@ -7,7 +7,7 @@ import { formatCurrency } from '../../utils/formatters';
 import { PieChart as PieIcon } from 'lucide-react';
 
 const CATEGORY_COLORS: { [key: string]: string } = {
-  Salaries: '#8b5cf6',
+  Salaries: '#0d9488',
   'Facebook Boost': '#ec4899',
   Advertising: '#3b82f6',
   Software: '#10b981',
@@ -36,7 +36,7 @@ export const CategoryPieChart: React.FC = () => {
       category: cat,
       amount: categoryMap[cat],
       percentage: totalAmount > 0 ? Math.round((categoryMap[cat] / totalAmount) * 100) : 0,
-      color: CATEGORY_COLORS[cat] || '#8b5cf6',
+      color: CATEGORY_COLORS[cat] || '#0d9488',
     }));
   };
 
@@ -46,9 +46,9 @@ export const CategoryPieChart: React.FC = () => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-slate-900 border border-slate-700/80 p-3 rounded-xl shadow-2xl text-xs">
-          <p className="font-bold text-slate-200">{data.category}</p>
-          <p className="text-purple-400 font-semibold mt-0.5">
+        <div className="bg-white border border-slate-200 p-3 rounded-xl shadow-xl text-xs">
+          <p className="font-extrabold text-slate-900">{data.category}</p>
+          <p className="text-teal-600 font-bold mt-0.5">
             {formatCurrency(data.amount)} ({data.percentage}%)
           </p>
         </div>
@@ -66,7 +66,7 @@ export const CategoryPieChart: React.FC = () => {
         <EmptyState
           title="No expense data recorded yet"
           description="Category distribution pie chart will appear here once expenses are logged."
-          icon={<PieIcon className="w-10 h-10 text-purple-400" />}
+          icon={<PieIcon className="w-10 h-10 text-teal-600" />}
         />
       ) : (
         <div className="w-full h-64 sm:h-72">
@@ -83,7 +83,7 @@ export const CategoryPieChart: React.FC = () => {
                 nameKey="category"
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} stroke="#0f172a" strokeWidth={2} />
+                  <Cell key={`cell-${index}`} fill={entry.color} stroke="#ffffff" strokeWidth={2} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
@@ -91,7 +91,7 @@ export const CategoryPieChart: React.FC = () => {
                 layout="vertical"
                 align="right"
                 verticalAlign="middle"
-                formatter={(value) => <span className="text-xs text-slate-300 font-medium">{value}</span>}
+                formatter={(value) => <span className="text-xs text-slate-700 font-bold">{value}</span>}
               />
             </PieChart>
           </ResponsiveContainer>

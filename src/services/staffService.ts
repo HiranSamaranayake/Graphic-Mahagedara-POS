@@ -37,11 +37,13 @@ export const fetchStaffFromDb = async (): Promise<StaffMember[]> => {
       const perf = staffPerfMap[item.id] || { jobs: 0, revenue: 0 };
       const commPct = Number(item.commission_percentage || 0);
       const computedCommission = (perf.revenue * commPct) / 100;
+      const cat = item.staff_category === 'Graphic Designer' ? 'Graphic Designer' : 'Call Center Operator';
 
       return {
         id: item.id,
         name: item.full_name,
-        role: 'Graphic Designer',
+        role: cat,
+        staffCategory: cat,
         phone: item.phone || '',
         email: item.email || undefined,
         joiningDate: item.joining_date || new Date().toISOString().split('T')[0],
@@ -86,6 +88,7 @@ export const addStaffToDb = async (
 
   const payload = {
     full_name: staffData.name.trim(),
+    staff_category: staffData.staffCategory || 'Call Center Operator',
     email: staffData.email ? staffData.email.trim() : null,
     phone: staffData.phone ? staffData.phone.trim() : null,
     joining_date: staffData.joiningDate,
@@ -115,10 +118,13 @@ export const addStaffToDb = async (
     throw new Error('Failed to insert staff member into Supabase database.');
   }
 
+  const cat = data.staff_category === 'Graphic Designer' ? 'Graphic Designer' : 'Call Center Operator';
+
   return {
     id: data.id,
     name: data.full_name,
-    role: 'Graphic Designer',
+    role: cat,
+    staffCategory: cat,
     phone: data.phone || '',
     email: data.email || undefined,
     joiningDate: data.joining_date,

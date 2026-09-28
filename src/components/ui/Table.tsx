@@ -23,8 +23,8 @@ export function Table<T>({
 }: TableProps<T>) {
   if (data.length === 0) {
     return (
-      <div className="py-12 text-center text-slate-400 bg-slate-900/50 border border-slate-800 rounded-2xl">
-        <p className="text-sm">{emptyMessage}</p>
+      <div className="py-12 text-center text-slate-500 bg-white border border-slate-200 rounded-2xl shadow-xs">
+        <p className="text-sm font-medium">{emptyMessage}</p>
       </div>
     );
   }
@@ -39,10 +39,10 @@ export function Table<T>({
   return (
     <div className="w-full">
       {/* Desktop & Tablet Table View */}
-      <div className="hidden sm:block overflow-x-auto border border-slate-800 rounded-2xl bg-slate-900/80 shadow-xl">
+      <div className="hidden sm:block overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-xs">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-800/80 bg-slate-950/60 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <tr className="border-b border-slate-200 bg-slate-50 text-xs font-bold text-slate-600 uppercase tracking-wider">
               {columns.map((col, idx) => (
                 <th key={idx} className={`px-5 py-4 ${col.className || ''}`}>
                   {col.header}
@@ -50,13 +50,13 @@ export function Table<T>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 text-sm text-slate-200">
+          <tbody className="divide-y divide-slate-100 text-sm text-slate-800">
             {data.map((row) => (
               <tr
                 key={keyExtractor(row)}
                 onClick={() => onRowClick && onRowClick(row)}
                 className={`transition-colors duration-150 ${
-                  onRowClick ? 'cursor-pointer hover:bg-purple-950/20' : 'hover:bg-slate-800/40'
+                  onRowClick ? 'cursor-pointer hover:bg-teal-50/60' : 'hover:bg-slate-50/80'
                 }`}
               >
                 {columns.map((col, idx) => (
@@ -76,12 +76,12 @@ export function Table<T>({
           <div
             key={keyExtractor(row)}
             onClick={() => onRowClick && onRowClick(row)}
-            className="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2.5 shadow-md active:border-purple-500/50"
+            className="p-4 bg-white border border-slate-200 rounded-xl space-y-2.5 shadow-xs active:border-teal-500"
           >
             {columns.map((col, idx) => (
               <div key={idx} className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-slate-400 uppercase">{col.header}:</span>
-                <span className="text-slate-100 text-right">{renderCellContent(row, col)}</span>
+                <span className="font-bold text-slate-500 uppercase">{col.header}:</span>
+                <span className="text-slate-900 text-right">{renderCellContent(row, col)}</span>
               </div>
             ))}
           </div>

@@ -19,35 +19,32 @@ export const RevenueVsExpensesChart: React.FC = () => {
   const { dailyIncomeList, expenseList } = useApp();
 
   const getCombinedMonthlyData = () => {
-    if (dailyIncomeList.length === 0 && expenseList.length === 0) return [];
+    const hasData = dailyIncomeList.length > 0 || expenseList.length > 0;
+    if (!hasData) return [];
 
-    const monthMap: { [key: string]: { month: string; revenue: number; expenses: number } } = {};
+    const months: { key: string; month: string; revenue: number; expenses: number; profit: number }[] = [];
+    const now = new Date();
 
-    dailyIncomeList.forEach((item) => {
-      const monthKey = item.date.substring(0, 7);
-      const date = new Date(item.date);
-      const monthLabel = date.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = d.toISOString().substring(0, 7);
+      const monthLabel = d.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+      months.push({ key, month: monthLabel, revenue: 0, expenses: 0, profit: 0 });
+    }
 
-      if (!monthMap[monthKey]) {
-        monthMap[monthKey] = { month: monthLabel, revenue: 0, expenses: 0 };
-      }
-      monthMap[monthKey].revenue += item.dailyTotal;
+    months.forEach((m) => {
+      m.revenue = dailyIncomeList
+        .filter((item) => item.date.startsWith(m.key))
+        .reduce((sum, item) => sum + item.dailyTotal, 0);
+
+      m.expenses = expenseList
+        .filter((item) => item.date.startsWith(m.key))
+        .reduce((sum, item) => sum + item.amount, 0);
+
+      m.profit = m.revenue - m.expenses;
     });
 
-    expenseList.forEach((item) => {
-      const monthKey = item.date.substring(0, 7);
-      const date = new Date(item.date);
-      const monthLabel = date.toLocaleString('en-US', { month: 'short', year: '2-digit' });
-
-      if (!monthMap[monthKey]) {
-        monthMap[monthKey] = { month: monthLabel, revenue: 0, expenses: 0 };
-      }
-      monthMap[monthKey].expenses += item.amount;
-    });
-
-    return Object.keys(monthMap)
-      .sort()
-      .map((k) => monthMap[k]);
+    return months;
   };
 
   const chartData = getCombinedMonthlyData();
@@ -55,15 +52,15 @@ export const RevenueVsExpensesChart: React.FC = () => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-slate-900 border border-slate-700/80 p-3 rounded-xl shadow-2xl text-xs space-y-1">
-          <p className="font-bold text-slate-200">{label}</p>
-          <div className="flex items-center justify-between gap-4 text-emerald-400">
+        <div className="bg-white border border-slate-200 p-3 rounded-xl shadow-xl text-xs space-y-1">
+          <p className="font-extrabold text-slate-900">{label}</p>
+          <div className="flex items-center justify-between gap-4 text-teal-600 font-bold">
             <span>Revenue:</span>
-            <span className="font-bold">{formatCurrency(payload[0]?.value || 0)}</span>
+            <span>{formatCurrency(payload[0]?.value || 0)}</span>
           </div>
-          <div className="flex items-center justify-between gap-4 text-rose-400">
+          <div className="flex items-center justify-between gap-4 text-rose-600 font-bold">
             <span>Expenses:</span>
-            <span className="font-bold">{formatCurrency(payload[1]?.value || 0)}</span>
+            <span>{formatCurrency(payload[1]?.value || 0)}</span>
           </div>
         </div>
       );
@@ -80,13 +77,13 @@ export const RevenueVsExpensesChart: React.FC = () => {
         <EmptyState
           title="No comparison data available yet"
           description="Log daily income and business expenses to view comparison charts."
-          icon={<BarChart2 className="w-10 h-10 text-purple-400" />}
+          icon={<BarChart2 className="w-10 h-10 text-teal-600" />}
         />
       ) : (
         <div className="w-full h-64 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
               <XAxis dataKey="month" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
               <YAxis
                 stroke="#64748b"
@@ -98,9 +95,9 @@ export const RevenueVsExpensesChart: React.FC = () => {
               <Tooltip content={<CustomTooltip />} />
               <Legend
                 wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }}
-                formatter={(value) => <span className="text-slate-300 font-medium">{value}</span>}
+                formatter={(value) => <span className="text-slate-700 font-bold">{value}</span>}
               />
-              <Bar dataKey="revenue" name="Revenue" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="revenue" name="Revenue" fill="#0d9488" radius={[6, 6, 0, 0]} />
               <Bar dataKey="expenses" name="Expenses" fill="#f43f5e" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

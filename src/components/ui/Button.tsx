@@ -19,7 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-bold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400/50 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] cursor-pointer';
+    'inline-flex items-center justify-center font-bold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-400/50 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] cursor-pointer';
 
   const sizeStyles = {
     sm: 'px-3 py-1.5 text-xs gap-1.5',
@@ -29,14 +29,14 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     primary:
-      'bg-amber-400 hover:bg-yellow-300 text-zinc-950 font-black shadow-lg shadow-amber-500/20 border border-amber-300',
+      'bg-teal-500 hover:bg-teal-600 text-white font-black shadow-md shadow-teal-500/20 border border-teal-400',
     secondary:
-      'bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 shadow-sm',
+      'bg-slate-900 hover:bg-black text-white border border-slate-800 shadow-xs',
     outline:
-      'bg-transparent hover:bg-amber-500/10 text-amber-400 border border-amber-400/50 hover:border-amber-300',
-    ghost: 'bg-transparent hover:bg-zinc-800/60 text-zinc-300 hover:text-white',
+      'bg-white hover:bg-teal-50 text-teal-700 border border-teal-500/60 hover:border-teal-600 shadow-xs',
+    ghost: 'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900',
     danger:
-      'bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white shadow-lg shadow-rose-600/20 border border-rose-500/30',
+      'bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 border border-rose-500',
   };
 
   return (

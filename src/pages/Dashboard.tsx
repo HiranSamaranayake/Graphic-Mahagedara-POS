@@ -10,15 +10,22 @@ import { AddIncomeModal } from '../components/forms/AddIncomeModal';
 import { AddExpenseModal } from '../components/forms/AddExpenseModal';
 import { AddStaffModal } from '../components/forms/AddStaffModal';
 import { AddSalaryModal } from '../components/forms/AddSalaryModal';
-import { useApp } from '../context/AppContext';
+import { GraphicDesignerDashboardView } from '../components/dashboard/GraphicDesignerDashboardView';
+import { useAuth } from '../context/AuthContext';
 import { Calendar, Sparkles } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
-  const { dailyIncomeList, expenseList } = useApp();
+  const { role, profile } = useAuth();
+
   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
   const [isSalaryModalOpen, setIsSalaryModalOpen] = useState(false);
+
+  // If logged in as Graphic Designer, render personal simple Graphic Designer Dashboard
+  if (role === 'Staff' && profile?.staffCategory === 'Graphic Designer') {
+    return <GraphicDesignerDashboardView />;
+  }
 
   // Dynamic greeting based on current local hour
   const getGreeting = () => {
@@ -35,47 +42,40 @@ export const Dashboard: React.FC = () => {
     year: 'numeric',
   }).format(new Date());
 
+  const isCallCenter = role === 'Staff' && profile?.staffCategory === 'Call Center Operator';
+
   return (
     <div className="space-y-6">
       {/* Dashboard Top Greeting Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-slate-900/80 border border-slate-800 rounded-3xl shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white border border-slate-200 rounded-3xl shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 text-purple-400 font-semibold text-xs mb-1">
+          <div className="flex items-center gap-2 text-teal-600 font-bold text-xs mb-1">
             <Sparkles className="w-4 h-4" />
             <span>GRAPHIC MAHAGEDARA DASHBOARD</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {getGreeting()}, Admin
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            {getGreeting()}, {profile?.fullName || (role === 'Admin' ? 'Admin' : 'Operator')}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Here's what's happening with Graphic Mahagedara today.
+          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+            {isCallCenter
+              ? "Call Center Operations — Record & manage daily income transactions."
+              : "Here's what's happening with Graphic Mahagedara today."}
           </p>
         </div>
 
-        <div className="relative z-10 inline-flex items-center gap-2.5 px-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-2xl text-xs font-semibold text-slate-300 self-start sm:self-center">
-          <Calendar className="w-4 h-4 text-purple-400" />
+        <div className="relative z-10 inline-flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 self-start sm:self-center shadow-xs">
+          <Calendar className="w-4 h-4 text-teal-600" />
           <span>{formattedDate}</span>
         </div>
       </div>
 
-      {/* Empty Database Prompt Banner */}
-      {dailyIncomeList.length === 0 && expenseList.length === 0 && (
-        <div className="p-4 bg-purple-950/30 border border-purple-800/40 rounded-2xl flex items-center justify-between text-xs text-purple-300">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Start adding staff, daily income, and expenses to see your business analytics.</span>
-          </div>
-          <span className="font-semibold text-purple-400">Database Empty</span>
-        </div>
-      )}
-
       {/* Summary Cards */}
       <SummaryCards />
 
-      {/* Real-time Salary Summary Cards */}
-      <SalarySummaryCards />
+      {/* Real-time Salary Summary Cards (Admin Only) */}
+      {role === 'Admin' && <SalarySummaryCards />}
 
       {/* Quick Action Controls */}
       <QuickActions
@@ -88,15 +88,17 @@ export const Dashboard: React.FC = () => {
       {/* Large Revenue Overview Chart */}
       <RevenueOverviewChart />
 
-      {/* Charts Grid: Revenue vs Expenses & Net Profit Summary */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <RevenueVsExpensesChart />
+      {/* Charts Grid: Revenue vs Expenses & Net Profit Summary (Admin Only) */}
+      {role === 'Admin' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <RevenueVsExpensesChart />
+          </div>
+          <div>
+            <ProfitSummaryCard />
+          </div>
         </div>
-        <div>
-          <ProfitSummaryCard />
-        </div>
-      </div>
+      )}
 
       {/* Recent Transactions Table */}
       <RecentTransactions />
@@ -110,14 +112,18 @@ export const Dashboard: React.FC = () => {
         isOpen={isExpenseModalOpen}
         onClose={() => setIsExpenseModalOpen(false)}
       />
-      <AddStaffModal
-        isOpen={isStaffModalOpen}
-        onClose={() => setIsStaffModalOpen(false)}
-      />
-      <AddSalaryModal
-        isOpen={isSalaryModalOpen}
-        onClose={() => setIsSalaryModalOpen(false)}
-      />
+      {role === 'Admin' && (
+        <>
+          <AddStaffModal
+            isOpen={isStaffModalOpen}
+            onClose={() => setIsStaffModalOpen(false)}
+          />
+          <AddSalaryModal
+            isOpen={isSalaryModalOpen}
+            onClose={() => setIsSalaryModalOpen(false)}
+          />
+        </>
+      )}
     </div>
   );
 };

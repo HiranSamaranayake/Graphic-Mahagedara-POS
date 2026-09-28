@@ -26,6 +26,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({ isOpen, onClose })
 
   const [name, setName] = useState<string>('');
   const [role, setRole] = useState<string>('Graphic Designer');
+  const [staffCategory, setStaffCategory] = useState<'Call Center Operator' | 'Graphic Designer'>('Call Center Operator');
   const [phone, setPhone] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [joiningDate, setJoiningDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -54,7 +55,8 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({ isOpen, onClose })
     try {
       await addStaff({
         name: name.trim(),
-        role: role.trim() || 'Graphic Designer',
+        role: role.trim() || staffCategory,
+        staffCategory,
         phone: phone.trim(),
         email: email.trim() || undefined,
         joiningDate,
@@ -114,16 +116,26 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({ isOpen, onClose })
             required
           />
 
-          <Input
-            label="Job Role / Title"
-            placeholder="e.g. Graphic Designer"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            icon={<Briefcase className="w-4 h-4 text-purple-400" />}
+          <Select
+            label="Staff Category"
+            options={[
+              { value: 'Call Center Operator', label: 'Call Center Operator' },
+              { value: 'Graphic Designer', label: 'Graphic Designer' },
+            ]}
+            value={staffCategory}
+            onChange={(e) => setStaffCategory(e.target.value as 'Call Center Operator' | 'Graphic Designer')}
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Job Role / Title"
+            placeholder="e.g. Graphic Designer / Operator"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            icon={<Briefcase className="w-4 h-4 text-purple-400" />}
+          />
+
           <Input
             label="Phone Number"
             placeholder="e.g. +94 77 123 4567"
@@ -131,6 +143,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({ isOpen, onClose })
             onChange={(e) => setPhone(e.target.value)}
             icon={<Phone className="w-4 h-4 text-purple-400" />}
           />
+        </div>
 
           <Input
             label="Email Address"
@@ -140,7 +153,6 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({ isOpen, onClose })
             onChange={(e) => setEmail(e.target.value)}
             icon={<Mail className="w-4 h-4 text-purple-400" />}
           />
-        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
