@@ -58,11 +58,11 @@ export const Sidebar: React.FC = () => {
         return ['/dashboard', '/daily-post-count', '/salaries'].includes(item.path);
       }
       // Call Center Operator
-      return ['/dashboard', '/daily-income'].includes(item.path);
+      return ['/dashboard', '/daily-income', '/salaries'].includes(item.path);
     }
     return true;
   }).map((item) => {
-    if (role === 'Staff' && category === 'Graphic Designer' && item.path === '/salaries') {
+    if (role === 'Staff' && item.path === '/salaries') {
       return { ...item, label: 'My Salary' };
     }
     return item;

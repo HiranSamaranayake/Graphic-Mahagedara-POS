@@ -12,14 +12,8 @@ import { Plus, Wallet, CheckCircle, Clock, Edit3, Trash2, Users, DollarSign, Awa
 
 import { useAuth } from '../context/AuthContext';
 
-import { Navigate } from 'react-router-dom';
-
 export const Salaries: React.FC = () => {
-  const { role, profile } = useAuth();
-  if (role === 'Staff' && profile?.staffCategory !== 'Graphic Designer') {
-    return <Navigate to="/dashboard" replace />;
-  }
-
+  const { role } = useAuth();
   const { salaryList, staffList, updateSalaryStatus, deleteSalaryRecord } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [salaryToEdit, setSalaryToEdit] = useState<SalaryRecord | null>(null);

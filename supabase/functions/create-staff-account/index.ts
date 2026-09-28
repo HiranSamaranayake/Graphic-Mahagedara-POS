@@ -69,11 +69,12 @@ serve(async (req) => {
     }
 
     // 4. Parse request payload
-    const { fullName, email, temporaryPassword } = await req.json();
+    const { fullName, email, temporaryPassword, staffCategory } = await req.json();
 
     const cleanName = (fullName || '').trim();
     const cleanEmail = (email || '').trim().toLowerCase();
     const cleanPassword = temporaryPassword || '';
+    const cleanCategory = staffCategory === 'Graphic Designer' ? 'Graphic Designer' : 'Call Center Operator';
 
     if (!cleanName || !cleanEmail || !cleanPassword) {
       return new Response(
@@ -101,6 +102,7 @@ serve(async (req) => {
       email_confirm: true,
       user_metadata: {
         full_name: cleanName,
+        staff_category: cleanCategory,
       },
     });
 
@@ -118,7 +120,7 @@ serve(async (req) => {
       );
     }
 
-    // 6. Ensure matching public.profiles row has role = 'staff'
+    // 6. Ensure matching public.profiles row has role = 'staff' and staff_category = cleanCategory
     const { error: upsertErr } = await adminClient
       .from('profiles')
       .upsert({
@@ -126,11 +128,41 @@ serve(async (req) => {
         full_name: cleanName,
         email: cleanEmail,
         role: 'staff',
+        staff_category: cleanCategory,
         updated_at: new Date().toISOString(),
       });
 
     if (upsertErr) {
       console.error('Profile upsert warning:', upsertErr.message);
+    }
+
+    // 7. Sync with public.staff table
+    const { data: existingStaff } = await adminClient
+      .from('staff')
+      .select('id')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (existingStaff) {
+      await adminClient
+        .from('staff')
+        .update({
+          user_id: createdUserData.user.id,
+          full_name: cleanName,
+          staff_category: cleanCategory,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existingStaff.id);
+    } else {
+      await adminClient
+        .from('staff')
+        .insert({
+          user_id: createdUserData.user.id,
+          full_name: cleanName,
+          email: cleanEmail,
+          staff_category: cleanCategory,
+          status: 'Active',
+        });
     }
 
     return new Response(
@@ -141,6 +173,7 @@ serve(async (req) => {
           id: createdUserData.user.id,
           email: createdUserData.user.email,
           role: 'staff',
+          staff_category: cleanCategory,
         },
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

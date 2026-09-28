@@ -295,8 +295,8 @@ CREATE POLICY "Insert expenses" ON public.expenses FOR INSERT TO authenticated W
 CREATE POLICY "Update expenses" ON public.expenses FOR UPDATE TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
 CREATE POLICY "Delete expenses" ON public.expenses FOR DELETE TO authenticated USING (public.is_admin());
 
--- 6. SALARY PAYMENTS POLICIES (Graphic Designer can ONLY read own salary record)
-CREATE POLICY "Select salary payments" ON public.salary_payments FOR SELECT TO authenticated USING (public.is_admin() OR (public.is_graphic_designer() AND public.get_my_staff_id() IS NOT NULL AND staff_id = public.get_my_staff_id()));
+-- 6. SALARY PAYMENTS POLICIES (All staff can read own salary record; Admin full access)
+CREATE POLICY "Select salary payments" ON public.salary_payments FOR SELECT TO authenticated USING (public.is_admin() OR (public.get_my_staff_id() IS NOT NULL AND staff_id = public.get_my_staff_id()));
 CREATE POLICY "Admin insert salary_payments" ON public.salary_payments FOR INSERT TO authenticated WITH CHECK (public.is_admin());
 CREATE POLICY "Admin update salary_payments" ON public.salary_payments FOR UPDATE TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
 CREATE POLICY "Admin delete salary_payments" ON public.salary_payments FOR DELETE TO authenticated USING (public.is_admin());

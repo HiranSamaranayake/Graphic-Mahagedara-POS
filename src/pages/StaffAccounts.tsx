@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { UserPlus, Shield, UserCheck, AlertCircle, CheckCircle2, Search, RefreshCw, KeyRound, Mail, User } from 'lucide-react';
+import { UserPlus, Shield, UserCheck, AlertCircle, CheckCircle2, Search, RefreshCw, KeyRound, Mail, User, Briefcase } from 'lucide-react';
 import type { UserProfile } from '../context/AuthContext';
+import type { StaffCategory } from '../types';
 
 export const StaffAccounts: React.FC = () => {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
@@ -13,6 +14,7 @@ export const StaffAccounts: React.FC = () => {
   const [fullName, setFullName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [staffCategory, setStaffCategory] = useState<StaffCategory>('Call Center Operator');
 
   // Notification states
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -34,6 +36,7 @@ export const StaffAccounts: React.FC = () => {
             fullName: item.full_name,
             email: item.email,
             role: item.role === 'admin' ? 'Admin' : 'Staff',
+            staffCategory: (item.staff_category === 'Graphic Designer' ? 'Graphic Designer' : 'Call Center Operator') as StaffCategory,
             avatarUrl: item.avatar_url,
           }))
         );
@@ -82,6 +85,7 @@ export const StaffAccounts: React.FC = () => {
           fullName: cleanName,
           email: cleanEmail,
           temporaryPassword: password,
+          staffCategory: staffCategory,
         },
       });
 
@@ -93,10 +97,11 @@ export const StaffAccounts: React.FC = () => {
         throw new Error(data.error);
       }
 
-      setSuccessMsg(`Staff login account successfully created for ${cleanName} (${cleanEmail})!`);
+      setSuccessMsg(`Staff login account successfully created for ${cleanName} (${cleanEmail}) as ${staffCategory}!`);
       setFullName('');
       setEmail('');
       setPassword('');
+      setStaffCategory('Call Center Operator');
       await fetchProfiles();
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to create staff login account.');
@@ -210,6 +215,22 @@ export const StaffAccounts: React.FC = () => {
             </div>
 
             <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                <Briefcase className="w-3.5 h-3.5 text-teal-600" />
+                Staff Category <span className="text-rose-500">*</span>
+              </label>
+              <select
+                required
+                value={staffCategory}
+                onChange={(e) => setStaffCategory(e.target.value as StaffCategory)}
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-400/40 transition-colors"
+              >
+                <option value="Call Center Operator">Call Center Operator</option>
+                <option value="Graphic Designer">Graphic Designer</option>
+              </select>
+            </div>
+
+            <div>
               <label className="block text-xs font-bold text-slate-500 mb-1.5 flex items-center gap-1.5">
                 <Shield className="w-3.5 h-3.5 text-slate-400" />
                 Assigned Role
@@ -283,6 +304,7 @@ export const StaffAccounts: React.FC = () => {
                     <th className="py-3 px-3">User</th>
                     <th className="py-3 px-3">Email</th>
                     <th className="py-3 px-3">Role</th>
+                    <th className="py-3 px-3">Category</th>
                     <th className="py-3 px-3 text-right">Status</th>
                   </tr>
                 </thead>
@@ -307,6 +329,11 @@ export const StaffAccounts: React.FC = () => {
                           }`}
                         >
                           {p.role}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                          {p.staffCategory || 'Call Center Operator'}
                         </span>
                       </td>
                       <td className="py-3 px-3 text-right">
