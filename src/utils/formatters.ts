@@ -32,3 +32,25 @@ export const formatPercentage = (val: number): string => {
   const sign = val > 0 ? '+' : '';
   return `${sign}${val.toFixed(2)}%`;
 };
+
+/**
+ * Formats a Year-Month string (YYYY-MM) or date string into readable month format: September 2026
+ */
+export const formatMonth = (yearMonthStr: string): string => {
+  if (!yearMonthStr) return '';
+  try {
+    const parts = yearMonthStr.split('-');
+    if (parts.length >= 2) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10);
+      const date = new Date(year, month - 1, 1);
+      return new Intl.DateTimeFormat('en-GB', {
+        month: 'long',
+        year: 'numeric',
+      }).format(date);
+    }
+    return yearMonthStr;
+  } catch {
+    return yearMonthStr;
+  }
+};

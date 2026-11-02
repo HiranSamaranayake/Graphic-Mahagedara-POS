@@ -33,6 +33,9 @@ export const Reports: React.FC = () => {
   const { dailyIncomeList, expenseList, salaryList, staffList, addToast } = useApp();
 
   const [datePreset, setDatePreset] = useState<string>('thisMonth');
+  const [selectedMonthVal, setSelectedMonthVal] = useState<string>(
+    new Date().toISOString().substring(0, 7)
+  );
   const [customFrom, setCustomFrom] = useState<string>('');
   const [customTo, setCustomTo] = useState<string>('');
   const [selectedStaff, setSelectedStaff] = useState<string>('ALL');
@@ -71,6 +74,9 @@ export const Reports: React.FC = () => {
       const lastMonthPrefix = lastMonthDate.toISOString().substring(0, 7);
       return dateStr.startsWith(lastMonthPrefix);
     }
+    if (datePreset === 'selectMonth') {
+      return dateStr.startsWith(selectedMonthVal);
+    }
     if (datePreset === 'last3Months') {
       const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1);
       const target = new Date(dateStr);
@@ -101,7 +107,7 @@ export const Reports: React.FC = () => {
       }
       return true;
     });
-  }, [dailyIncomeList, datePreset, customFrom, customTo, selectedStaff, searchQuery]);
+  }, [dailyIncomeList, datePreset, selectedMonthVal, customFrom, customTo, selectedStaff, searchQuery]);
 
   // 2. Filtered Expenses Data
   const filteredExpenses = useMemo(() => {
@@ -118,7 +124,7 @@ export const Reports: React.FC = () => {
       }
       return true;
     });
-  }, [expenseList, datePreset, customFrom, customTo, selectedCategory, searchQuery]);
+  }, [expenseList, datePreset, selectedMonthVal, customFrom, customTo, selectedCategory, searchQuery]);
 
   // 3. Filtered Salaries Data
   const filteredSalaries = useMemo(() => {
@@ -134,7 +140,7 @@ export const Reports: React.FC = () => {
       }
       return true;
     });
-  }, [salaryList, datePreset, customFrom, customTo, selectedStaff, searchQuery]);
+  }, [salaryList, datePreset, selectedMonthVal, customFrom, customTo, selectedStaff, searchQuery]);
 
   // Summaries calculation
   const totalReportRevenue = useMemo(
@@ -316,6 +322,7 @@ export const Reports: React.FC = () => {
     { value: 'thisWeek', label: 'This Week' },
     { value: 'thisMonth', label: 'This Month' },
     { value: 'lastMonth', label: 'Last Month' },
+    { value: 'selectMonth', label: 'Select Specific Month' },
     { value: 'last3Months', label: 'Last 3 Months' },
     { value: 'thisYear', label: 'This Year' },
     { value: 'custom', label: 'Custom Date Range' },
@@ -429,6 +436,28 @@ export const Reports: React.FC = () => {
             icon={<Search className="w-4 h-4 text-teal-600" />}
           />
         </div>
+
+        {datePreset === 'selectMonth' && (
+          <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="w-full sm:w-64">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Choose Specific Month:
+              </label>
+              <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+                <Calendar className="w-4 h-4 text-teal-600 shrink-0" />
+                <input
+                  type="month"
+                  value={selectedMonthVal}
+                  onChange={(e) => setSelectedMonthVal(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none w-full cursor-pointer"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-slate-500 font-medium sm:mt-5">
+              Isolates report calculations and tables for the selected month.
+            </p>
+          </div>
+        )}
 
         {datePreset === 'custom' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">

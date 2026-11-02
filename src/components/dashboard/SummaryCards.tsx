@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { StatCard } from '../ui/StatCard';
 import { DollarSign, TrendingUp, CreditCard, PieChart, Users, Briefcase } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
@@ -47,13 +48,15 @@ export const SummaryCards: React.FC = () => {
           badgeText="Daily Total"
         />
 
-        <StatCard
-          title="This Month's Revenue"
-          value={formatCurrency(thisMonthsRevenue)}
-          subtitle={thisMonthsRevenue > 0 ? 'Current month gross' : 'No income this month'}
-          icon={<TrendingUp className="w-5 h-5 text-purple-400" />}
-          badgeText="Monthly Total"
-        />
+        <Link to="/monthly-income" className="block transition-transform hover:scale-[1.01]">
+          <StatCard
+            title="This Month's Revenue"
+            value={formatCurrency(thisMonthsRevenue)}
+            subtitle="Click to view month breakdown →"
+            icon={<TrendingUp className="w-5 h-5 text-purple-400" />}
+            badgeText="Monthly Total"
+          />
+        </Link>
 
         <StatCard
           title="This Month's Expenses"

@@ -13,6 +13,7 @@ import {
   X,
   LogOut,
   Layers,
+  Calendar,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
@@ -26,6 +27,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
   { label: 'Daily Income', path: '/daily-income', icon: <DollarSign className="w-5 h-5" /> },
+  { label: 'Monthly Income', path: '/monthly-income', icon: <Calendar className="w-5 h-5" /> },
   { label: 'Expenses', path: '/expenses', icon: <CreditCard className="w-5 h-5" /> },
   { label: 'Daily Post Count', path: '/daily-post-count', icon: <Layers className="w-5 h-5" /> },
   { label: 'Staff', path: '/staff', icon: <Users className="w-5 h-5" /> },

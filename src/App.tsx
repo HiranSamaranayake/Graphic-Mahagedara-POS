@@ -47,6 +47,16 @@ export const App: React.FC = () => {
               }
             />
             <Route
+              path="/monthly-income"
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <MainLayout>
+                    <DailyIncome initialTab="monthly" />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/expenses"
               element={
                 <ProtectedRoute>
